@@ -1,44 +1,381 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<!doctype html>
+<html>
 
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
-    <link rel="manifest" href="/assets/site.webmanifest">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png">
+    <link rel="manifest" href="./assets/site.webmanifest">
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
+    
     <title>Enrique Zafra</title>
-    <meta property="og:title" content="Enrique Zafra" />
-    <meta name="author" content="Enrique Zafra" />
-    <meta property="og:locale" content="es_ES" />
-    <meta name="description" content="Nada es espera, todo es ahora y el ahora no espera." />
-    <meta property="og:description" content="Nada es espera, todo es ahora y el ahora no espera." />
-    <link rel="canonical" href="http://enriquezafra.com/" />
-    <meta property="og:url" content="http://enriquezafra.com/" />
-    <meta property="og:site_name" content="Enrique Zafra" />
-    <link rel="stylesheet" href="/assets/css/style.css">
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-154724585-1"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
 
-      gtag('config', 'UA-154724585-1');
-    </script>
+    <link href="./assets/css/style.css" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
 
-  </head>
-  <body>
-    <div class="container">
-      <div class="main">
-        <div class="content" aria-label="Content">
-          <img src="/assets/mstile-150x150.png"/>
+<body class="min-h-screen bg-white antialiased">
+    <div class="flex min-h-svh items-center justify-center gap-6 p-6 md:p-10">
+        <div class="flex w-full max-w-sm items-center justify-center">
+            <div 
+                x-data="{
+                    pile: '',
+                    east: '',
+                    west: '',
+            
+                    code_cast: '',
+                    code_main: '',
+                    code_sway: '',
+
+                    main: '',
+                    sway: '',
+
+                    muta: false,
+            
+                    init() {    
+                        let arr = [];
+                        
+                        for (let i = 0; i < 6; i++) {
+                            arr.push(this.lineCast());
+                        }
+            
+                        this.setData(arr.join(''));
+                    },
+            
+                    setData(arr) {
+            
+                        this.code_cast = arr;
+            
+                        let castOpts = { 6: 7, 7: 7, 8: 8, 9: 8 };
+            
+                        let sway_cast = this.code_cast.replace(/[6789]/g, (m) => castOpts[m]);
+            
+                        let hexagramOpts = { 6: 0, 7: 1, 8: 0, 9: 1 };
+            
+                        this.code_main = this.code_cast.replace(/[6789]/g, (m) => hexagramOpts[m]);
+                        this.code_sway = sway_cast.replace(/[6789]/g, (m) => hexagramOpts[m]);  
+
+                        this.main = this.hexagram(this.code_main);
+                        this.sway = this.hexagram(this.code_sway);
+
+                        if(this.main === this.sway) { 
+                            this.muta = false; 
+                        } else { 
+                            this.muta = true; 
+                        }
+                        
+                    },
+            
+                    divideStalks(yarrowStalks) {
+                        let westPile = Math.floor(Math.random() * yarrowStalks + 1);
+                        let eastPile = yarrowStalks - westPile;
+            
+                        westPile = westPile - 1;
+            
+                        this.east = eastPile % 4;
+                        this.west = westPile % 4;
+            
+                        if (this.east === 0) {
+                            this.east = 4;
+                        }
+            
+                        if (this.west === 0) {
+                            this.west = 4;
+                        }
+                        this.pile = this.east + this.west + 1;
+                    },
+            
+                    lineCast() {
+                        let stalks = 49;
+                        let countValueOne = 0;
+                        let countValueTwo = 0;
+                        let countValueThree = 0;
+            
+                        this.divideStalks(stalks);
+                        if (this.east + this.west + 1 === 9) {
+                            countValueOne = 2;
+                        }
+                        if (this.east + this.west + 1 === 5) {
+                            countValueOne = 3;
+                        }
+            
+                        stalks = stalks - this.pile;
+            
+                        this.divideStalks(stalks);
+            
+                        if (this.east + this.west + 1 === 8) {
+                            countValueTwo = 2;
+                        }
+            
+                        if (this.east + this.west + 1 === 4) {
+                            countValueTwo = 3;
+                        }
+            
+                        stalks = stalks - this.pile;
+            
+                        this.divideStalks(stalks);
+            
+                        if (this.east + this.west + 1 === 8) {
+                            countValueThree = 2;
+                        }
+            
+                        if (this.east + this.west + 1 === 4) {
+                            countValueThree = 3;
+                        }
+            
+                        let lineValue = countValueOne + countValueTwo + countValueThree;
+            
+                        return lineValue;
+                    },
+                    hexagram($code)
+                    {
+                        switch($code) {
+                            case('111111'):  return '1'; break;
+                            case('000000'):  return '2'; break;
+                            case('100010'):  return '3'; break;
+                            case('010001'):  return '4'; break;
+                            case('111010'):  return '5'; break;
+                            case('010111'):  return '6'; break;
+                            case('010000'):  return '7'; break;
+                            case('000010'):  return '8'; break;
+                            case('111011'):  return '9'; break;
+                            case('110111'):  return '10'; break;
+                            case('111000'):  return '11'; break;
+                            case('000111'):  return '12'; break;
+                            case('101111'):  return '13'; break;
+                            case('111101'):  return '14'; break;
+                            case('001000'):  return '15'; break;
+                            case('000100'):  return '16'; break;
+                            case('100110'):  return '17'; break;
+                            case('011001'):  return '18'; break;
+                            case('110000'):  return '19'; break;
+                            case('000011'):  return '20'; break;
+                            case('100101'):  return '21'; break;
+                            case('101001'):  return '22'; break;
+                            case('000001'):  return '23'; break;
+                            case('100000'):  return '24'; break;
+                            case('100111'):  return '25'; break;
+                            case('111001'):  return '26'; break;
+                            case('100001'):  return '27'; break;
+                            case('011110'):  return '28'; break;
+                            case('010010'):  return '29'; break;
+                            case('101101'):  return '30'; break;
+                            case('001110'):  return '31'; break;
+                            case('011100'):  return '32'; break;
+                            case('001111'):  return '33'; break;
+                            case('111100'):  return '34'; break;
+                            case('000101'):  return '35'; break;
+                            case('101000'):  return '36'; break;
+                            case('101011'):  return '37'; break;
+                            case('110101'):  return '38'; break;
+                            case('001010'):  return '39'; break;
+                            case('010100'):  return '40'; break;
+                            case('110001'):  return '41'; break;
+                            case('100011'):  return '42'; break;
+                            case('111110'):  return '43'; break;
+                            case('011111'):  return '44'; break;
+                            case('000110'):  return '45'; break;
+                            case('011000'):  return '46'; break;
+                            case('010110'):  return '47'; break;
+                            case('011010'):  return '48'; break;
+                            case('101110'):  return '49'; break;
+                            case('011101'):  return '50'; break;
+                            case('100100'):  return '51'; break;
+                            case('001001'):  return '52'; break;
+                            case('001011'):  return '53'; break;
+                            case('110100'):  return '54'; break;
+                            case('101100'):  return '55'; break;
+                            case('001101'):  return '56'; break;
+                            case('011011'):  return '57'; break;
+                            case('110110'):  return '58'; break;
+                            case('010011'):  return '59'; break;
+                            case('110010'):  return '60'; break;
+                            case('110011'):  return '61'; break;
+                            case('001100'):  return '62'; break;
+                            case('101010'):  return '63'; break;
+                            case('010101'):  return '64'; break;
+                        };
+                    },
+
+                }"
+                >          
+                
+                
+                <div class="flex items-center space-x-4">
+                    <div class="w-auto">
+                        <template x-for="(line, index) in [...code_cast.split('').reverse().join('')]">
+                            <div>
+                                <template x-if="line.includes('6')">
+                                    <svg class="h-3 w-auto text-orange-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 12" fill="currentColor">
+                                        <path d="M0 3.5h30v5H0zM42 3.5h30v5H42z" />
+                                    </svg>
+                                </template>
+                                <template x-if="line.includes('7')">
+                                    <svg class="h-3 w-auto text-stone-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 12" fill="currentColor">
+                                        <path d="M0 3.5h72v5H0z" />
+                                    </svg>
+                                </template>
+                                <template x-if="line.includes('8')">
+                                    <svg class="h-3 w-auto text-stone-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 12" fill="currentColor">
+                                        <path d="M0 3.5h30v5H0zM42 3.5h30v5H42z" />
+                                    </svg>
+                                </template>
+                                <template x-if="line.includes('9')">
+                                    <svg class="h-3 w-auto text-orange-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 12" fill="currentColor">
+                                        <path d="M0 3.5h72v5H0z" />
+                                    </svg>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div>
+
+                        <div>
+                            <template x-if="code_main.slice(3,6).includes('000')">
+                                <svg class="h-9 w-auto text-gray-800" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><path fill="none" d="M0 0h240v240H0z"/><path fill="none" stroke="gray" stroke-width="8.3312328" d="M20 20h200v200H20z"/></svg>
+                            </template>
+                            <template x-if="code_main.slice(3,6).includes('001')">
+                                <svg class="h-9 w-auto text-gray-800" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><g fill="none"><path d="M0 0h240v240H0z"/><path d="M120 22.441l95.669 191.339H24.331L120 22.441z" stroke="#737373" stroke-width="8.33"/></g></svg>
+                            </template>
+                            <template x-if="code_main.slice(3,6).includes('010')">
+                                <svg class="h-9 w-auto text-gray-800" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><path fill="none" d="M0 0h240v240H0z"/><path d="M214.442 60.745c-1.203.197-2.305.914-3.076 1.984-1.572 2.185-39.079 53.113-90.1 16.572-58.148-41.65-99.507.067-99.92.496-1.825 1.892-1.797 4.921.1 6.747 1.892 1.826 4.918 1.797 6.747-.098 1.444-1.502 36.068-36.323 87.619.597 15.165 10.862 29.34 14.882 42.072 14.882 36.516-.003 60.896-33.185 61.223-33.639a4.762 4.762 0 00-1.092-6.646c-1.064-.765-2.37-1.089-3.573-.895zM214.442 140.673c-1.203.197-2.305.914-3.076 1.985-1.572 2.184-39.079 53.113-90.1 16.571-58.148-41.65-99.507.067-99.92.496-1.825 1.892-1.797 4.921.1 6.747 1.892 1.826 4.918 1.797 6.747-.098 1.444-1.502 36.068-36.322 87.619.597 15.165 10.862 29.34 14.882 42.072 14.882 36.516-.003 60.896-33.185 61.223-33.639a4.762 4.762 0 00-1.092-6.646c-1.064-.765-2.37-1.089-3.573-.895z" fill="gray"/><path d="M214.442 99.437c-1.203.197-2.305.915-3.076 1.985-1.572 2.185-39.079 53.113-90.1 16.572-58.148-41.65-99.507.067-99.92.495-1.825 1.893-1.797 4.922.1 6.748 1.892 1.826 4.918 1.797 6.747-.099 1.444-1.502 36.068-36.322 87.619.597 15.165 10.863 29.34 14.883 42.072 14.883 36.516-.003 60.896-33.185 61.223-33.64a4.762 4.762 0 00-1.092-6.645c-1.064-.765-2.37-1.09-3.573-.896z" fill="gray"/></svg>
+                            </template>
+                            <template x-if="code_main.slice(3,6).includes('011')">
+                                <svg class="h-9 w-auto text-gray-800"viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><g fill="none"><path d="M0 0h240v240H0z"/><g stroke="gray" stroke-width="3"><path d="M58.735 98.138h69.7s30.429 2.859 30.429-24.443c0-17.696-19.068-29.504-33.96-16.18-5.141 4.6-7.765 12.526-4.137 18.75M58.735 141.864h92.588s30.43-2.859 30.43 24.448c0 17.688-19.067 29.497-33.964 16.172-5.141-4.6-7.762-12.526-4.137-18.75" stroke-width="7.22082"/><path d="M20 120.448h169.571S220 123.309 220 96c0-17.688-19.066-29.497-33.96-16.172-5.143 4.6-7.764 12.526-4.14 18.75" stroke-width="7.22082"/></g></g></svg>
+                            </template>
+                            <template x-if="code_main.slice(3,6).includes('100')">
+                                <svg class="h-9 w-auto text-gray-800"viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><g fill="none"><path d="M0 0h240v240H0z"/><path d="M142.122 17.813L62.049 135.684l49.489-.594-25.042 85.838 85.178-116.767-51.674-.058 22.122-86.29z" stroke="#737373" stroke-width="8.33"/></g></svg>
+                            </template>
+                            <template x-if="code_main.slice(3,6).includes('101')">
+                                <svg class="h-9 w-auto text-gray-800"viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><path fill="none" d="M0 0h240v240H0z"/><path d="M206.8 520.4c-1.9 0-3.8-.7-5.3-2-.4-.3-.7-.6-1-.8-.8-.7-1.8-1.4-2.7-2.5-25.8-29.8-42.3-62.1-49.1-96.1-8.1-40.6-.8-78.5 21.7-112.6 16.2-24.6 36.6-44.4 52.6-58.9 30.5-27.6 53-56 69-86.7 14.2-27.3 21-52.9 20.8-78.1 0-2.7-.2-5.4-.5-8.3l-.3-4.2c-.2-3 1.3-5.8 3.9-7.4l1.3-.8c1.8-1.1 4.1-1.4 6.1-.9 2.1.5 3.9 1.9 4.9 3.8 2.8 5 5.8 10.1 8.6 15 6.4 11.1 13.1 22.5 19.2 34.2 1.7 3.3 3.5 6.6 5.2 9.9 11.3 21.2 23 43.1 26.4 68.8 5.7 43-12.2 81.1-28.3 105.6-16.1 24.6-37 44.9-57.3 64.6l-3.4 3.3c-18.4 17.9-37.5 36.5-53.1 57.2-20.2 27-30.3 55.2-30.8 86.1 0 .6 0 1.2-.1 2l-.1 1.3c-.2 3.1-2.1 5.7-4.9 6.9-.7.4-1.8.6-2.8.6z" fill="none" stroke="gray" stroke-width="18.15" transform="matrix(.3655 0 0 .3217 4.148 2.86)"/><path d="M206.8 520.4c-1.9 0-3.8-.7-5.3-2-.4-.3-.7-.6-1-.8-.8-.7-1.8-1.4-2.7-2.5-25.8-29.8-42.3-62.1-49.1-96.1-8.1-40.6-.8-78.5 21.7-112.6 16.2-24.6 36.6-44.4 52.6-58.9 30.5-27.6 53-56 69-86.7 14.2-27.3 21-52.9 20.8-78.1 0-2.7-.2-5.4-.5-8.3l-.3-4.2c-.2-3 1.3-5.8 3.9-7.4l1.3-.8c1.8-1.1 4.1-1.4 6.1-.9 2.1.5 3.9 1.9 4.9 3.8 2.8 5 5.8 10.1 8.6 15 6.4 11.1 13.1 22.5 19.2 34.2 1.7 3.3 3.5 6.6 5.2 9.9 11.3 21.2 23 43.1 26.4 68.8 5.7 43-12.2 81.1-28.3 105.6-16.1 24.6-37 44.9-57.3 64.6l-3.4 3.3c-18.4 17.9-37.5 36.5-53.1 57.2-20.2 27-30.3 55.2-30.8 86.1 0 .6 0 1.2-.1 2l-.1 1.3c-.2 3.1-2.1 5.7-4.9 6.9-.7.4-1.8.6-2.8.6z" fill="none" stroke="gray" stroke-width="18.15" transform="matrix(.3655 0 0 .3217 40.606 46.366)"/></svg>
+                            </template>
+                            <template x-if="code_main.slice(3,6).includes('110')">
+                                <svg class="h-9 w-auto text-gray-800"viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><g fill="none"><path d="M0 0h240v240H0z"/><g stroke="gray" stroke-width="8.33"><ellipse cx="120" cy="83.462" rx="95.669" ry="27.071"/><path d="M24.331 84.161c0 52.836 42.832 95.669 95.669 95.669 52.837 0 95.669-42.833 95.669-95.669"/></g></g></svg>
+                            </template>
+                            <template x-if="code_main.slice(3,6).includes('111')">
+                                <svg class="h-9 w-auto text-gray-800"viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><path fill="none" d="M0 0h240v240H0z"/><ellipse cx="267.573" cy="232.992" rx="151.597" ry="121.339" fill="none" stroke="gray" stroke-width="11.16" transform="matrix(.65965 0 0 .82414 -56.504 -72.017)"/></svg>
+                            </template>
+                        </div>
+                        <div>
+                            <template x-if="code_main.slice(0,3).includes('000')">
+                                <!-- Earth -->
+                                <svg class="h-9 w-auto text-gray-800" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><path fill="none" d="M0 0h240v240H0z"/><path fill="none" stroke="gray" stroke-width="8.3312328" d="M20 20h200v200H20z"/></svg>
+                            </template>
+                            <template x-if="code_main.slice(0,3).includes('001')">
+                                <!-- Mountain -->
+                                <svg class="h-9 w-auto text-gray-800" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><g fill="none"><path d="M0 0h240v240H0z"/><path d="M120 22.441l95.669 191.339H24.331L120 22.441z" stroke="#737373" stroke-width="8.33"/></g></svg>
+                            </template>
+                            <template x-if="code_main.slice(0,3).includes('010')">
+                                <!-- Water -->
+                                <svg class="h-9 w-auto text-gray-800" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><path fill="none" d="M0 0h240v240H0z"/><path d="M214.442 60.745c-1.203.197-2.305.914-3.076 1.984-1.572 2.185-39.079 53.113-90.1 16.572-58.148-41.65-99.507.067-99.92.496-1.825 1.892-1.797 4.921.1 6.747 1.892 1.826 4.918 1.797 6.747-.098 1.444-1.502 36.068-36.323 87.619.597 15.165 10.862 29.34 14.882 42.072 14.882 36.516-.003 60.896-33.185 61.223-33.639a4.762 4.762 0 00-1.092-6.646c-1.064-.765-2.37-1.089-3.573-.895zM214.442 140.673c-1.203.197-2.305.914-3.076 1.985-1.572 2.184-39.079 53.113-90.1 16.571-58.148-41.65-99.507.067-99.92.496-1.825 1.892-1.797 4.921.1 6.747 1.892 1.826 4.918 1.797 6.747-.098 1.444-1.502 36.068-36.322 87.619.597 15.165 10.862 29.34 14.882 42.072 14.882 36.516-.003 60.896-33.185 61.223-33.639a4.762 4.762 0 00-1.092-6.646c-1.064-.765-2.37-1.089-3.573-.895z" fill="gray"/><path d="M214.442 99.437c-1.203.197-2.305.915-3.076 1.985-1.572 2.185-39.079 53.113-90.1 16.572-58.148-41.65-99.507.067-99.92.495-1.825 1.893-1.797 4.922.1 6.748 1.892 1.826 4.918 1.797 6.747-.099 1.444-1.502 36.068-36.322 87.619.597 15.165 10.863 29.34 14.883 42.072 14.883 36.516-.003 60.896-33.185 61.223-33.64a4.762 4.762 0 00-1.092-6.645c-1.064-.765-2.37-1.09-3.573-.896z" fill="gray"/></svg>
+                            </template>
+                            <template x-if="code_main.slice(0,3).includes('011')">
+                                <!-- Wind -->
+                                <svg class="h-9 w-auto text-gray-800"viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><g fill="none"><path d="M0 0h240v240H0z"/><g stroke="gray" stroke-width="3"><path d="M58.735 98.138h69.7s30.429 2.859 30.429-24.443c0-17.696-19.068-29.504-33.96-16.18-5.141 4.6-7.765 12.526-4.137 18.75M58.735 141.864h92.588s30.43-2.859 30.43 24.448c0 17.688-19.067 29.497-33.964 16.172-5.141-4.6-7.762-12.526-4.137-18.75" stroke-width="7.22082"/><path d="M20 120.448h169.571S220 123.309 220 96c0-17.688-19.066-29.497-33.96-16.172-5.143 4.6-7.764 12.526-4.14 18.75" stroke-width="7.22082"/></g></g></svg>
+                            </template>
+                            <template x-if="code_main.slice(0,3).includes('100')">
+                                <!-- Thunder -->
+                                <svg class="h-9 w-auto text-gray-800"viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><g fill="none"><path d="M0 0h240v240H0z"/><path d="M142.122 17.813L62.049 135.684l49.489-.594-25.042 85.838 85.178-116.767-51.674-.058 22.122-86.29z" stroke="#737373" stroke-width="8.33"/></g></svg>
+                            </template>
+                            <template x-if="code_main.slice(0,3).includes('101')">
+                                <!-- Fire -->
+                                <svg class="h-9 w-auto text-gray-800"viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><path fill="none" d="M0 0h240v240H0z"/><path d="M206.8 520.4c-1.9 0-3.8-.7-5.3-2-.4-.3-.7-.6-1-.8-.8-.7-1.8-1.4-2.7-2.5-25.8-29.8-42.3-62.1-49.1-96.1-8.1-40.6-.8-78.5 21.7-112.6 16.2-24.6 36.6-44.4 52.6-58.9 30.5-27.6 53-56 69-86.7 14.2-27.3 21-52.9 20.8-78.1 0-2.7-.2-5.4-.5-8.3l-.3-4.2c-.2-3 1.3-5.8 3.9-7.4l1.3-.8c1.8-1.1 4.1-1.4 6.1-.9 2.1.5 3.9 1.9 4.9 3.8 2.8 5 5.8 10.1 8.6 15 6.4 11.1 13.1 22.5 19.2 34.2 1.7 3.3 3.5 6.6 5.2 9.9 11.3 21.2 23 43.1 26.4 68.8 5.7 43-12.2 81.1-28.3 105.6-16.1 24.6-37 44.9-57.3 64.6l-3.4 3.3c-18.4 17.9-37.5 36.5-53.1 57.2-20.2 27-30.3 55.2-30.8 86.1 0 .6 0 1.2-.1 2l-.1 1.3c-.2 3.1-2.1 5.7-4.9 6.9-.7.4-1.8.6-2.8.6z" fill="none" stroke="gray" stroke-width="18.15" transform="matrix(.3655 0 0 .3217 4.148 2.86)"/><path d="M206.8 520.4c-1.9 0-3.8-.7-5.3-2-.4-.3-.7-.6-1-.8-.8-.7-1.8-1.4-2.7-2.5-25.8-29.8-42.3-62.1-49.1-96.1-8.1-40.6-.8-78.5 21.7-112.6 16.2-24.6 36.6-44.4 52.6-58.9 30.5-27.6 53-56 69-86.7 14.2-27.3 21-52.9 20.8-78.1 0-2.7-.2-5.4-.5-8.3l-.3-4.2c-.2-3 1.3-5.8 3.9-7.4l1.3-.8c1.8-1.1 4.1-1.4 6.1-.9 2.1.5 3.9 1.9 4.9 3.8 2.8 5 5.8 10.1 8.6 15 6.4 11.1 13.1 22.5 19.2 34.2 1.7 3.3 3.5 6.6 5.2 9.9 11.3 21.2 23 43.1 26.4 68.8 5.7 43-12.2 81.1-28.3 105.6-16.1 24.6-37 44.9-57.3 64.6l-3.4 3.3c-18.4 17.9-37.5 36.5-53.1 57.2-20.2 27-30.3 55.2-30.8 86.1 0 .6 0 1.2-.1 2l-.1 1.3c-.2 3.1-2.1 5.7-4.9 6.9-.7.4-1.8.6-2.8.6z" fill="none" stroke="gray" stroke-width="18.15" transform="matrix(.3655 0 0 .3217 40.606 46.366)"/></svg>
+                            </template>
+                            <template x-if="code_main.slice(0,3).includes('110')">
+                                <!-- Lake -->
+                                <svg class="h-9 w-auto text-gray-800"viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><g fill="none"><path d="M0 0h240v240H0z"/><g stroke="gray" stroke-width="8.33"><ellipse cx="120" cy="83.462" rx="95.669" ry="27.071"/><path d="M24.331 84.161c0 52.836 42.832 95.669 95.669 95.669 52.837 0 95.669-42.833 95.669-95.669"/></g></g></svg>
+                            </template>
+                            <template x-if="code_main.slice(0,3).includes('111')">
+                                <!-- Sky -->
+                                <svg class="h-9 w-auto text-gray-800"viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><path fill="none" d="M0 0h240v240H0z"/><ellipse cx="267.573" cy="232.992" rx="151.597" ry="121.339" fill="none" stroke="gray" stroke-width="11.16" transform="matrix(.65965 0 0 .82414 -56.504 -72.017)"/></svg>
+                            </template>
+                        </div>
+                    </div>
+
+                    <span x-text="main" class="text-xs text-stone-400"></span>
+                    
+                    <div x-show="muta" class="w-auto">
+                        <template x-for="(line, index) in [...code_sway.split('').reverse().join('')]">
+                            <div class="">
+                                <template x-if="line.includes('1')">
+                                    <svg class="h-3 w-auto text-stone-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 12" fill="currentColor">
+                                        <path d="M0 3.5h72v5H0z" />
+                                    </svg>
+                                </template>
+                                <template x-if="line.includes('0')">
+                                    <svg class="h-3 w-auto text-stone-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 12" fill="currentColor">
+                                        <path d="M0 3.5h30v5H0zM42 3.5h30v5H42z" />
+                                    </svg>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div x-show="muta">
+
+                        <div>
+                            <template x-if="code_sway.slice(3,6).includes('000')">
+                                <svg class="h-9 w-auto text-gray-800" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><path fill="none" d="M0 0h240v240H0z"/><path fill="none" stroke="gray" stroke-width="8.3312328" d="M20 20h200v200H20z"/></svg>
+                            </template>
+                            <template x-if="code_sway.slice(3,6).includes('001')">
+                                <svg class="h-9 w-auto text-gray-800" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><g fill="none"><path d="M0 0h240v240H0z"/><path d="M120 22.441l95.669 191.339H24.331L120 22.441z" stroke="#737373" stroke-width="8.33"/></g></svg>
+                            </template>
+                            <template x-if="code_sway.slice(3,6).includes('010')">
+                                <svg class="h-9 w-auto text-gray-800" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><path fill="none" d="M0 0h240v240H0z"/><path d="M214.442 60.745c-1.203.197-2.305.914-3.076 1.984-1.572 2.185-39.079 53.113-90.1 16.572-58.148-41.65-99.507.067-99.92.496-1.825 1.892-1.797 4.921.1 6.747 1.892 1.826 4.918 1.797 6.747-.098 1.444-1.502 36.068-36.323 87.619.597 15.165 10.862 29.34 14.882 42.072 14.882 36.516-.003 60.896-33.185 61.223-33.639a4.762 4.762 0 00-1.092-6.646c-1.064-.765-2.37-1.089-3.573-.895zM214.442 140.673c-1.203.197-2.305.914-3.076 1.985-1.572 2.184-39.079 53.113-90.1 16.571-58.148-41.65-99.507.067-99.92.496-1.825 1.892-1.797 4.921.1 6.747 1.892 1.826 4.918 1.797 6.747-.098 1.444-1.502 36.068-36.322 87.619.597 15.165 10.862 29.34 14.882 42.072 14.882 36.516-.003 60.896-33.185 61.223-33.639a4.762 4.762 0 00-1.092-6.646c-1.064-.765-2.37-1.089-3.573-.895z" fill="gray"/><path d="M214.442 99.437c-1.203.197-2.305.915-3.076 1.985-1.572 2.185-39.079 53.113-90.1 16.572-58.148-41.65-99.507.067-99.92.495-1.825 1.893-1.797 4.922.1 6.748 1.892 1.826 4.918 1.797 6.747-.099 1.444-1.502 36.068-36.322 87.619.597 15.165 10.863 29.34 14.883 42.072 14.883 36.516-.003 60.896-33.185 61.223-33.64a4.762 4.762 0 00-1.092-6.645c-1.064-.765-2.37-1.09-3.573-.896z" fill="gray"/></svg>
+                            </template>
+                            <template x-if="code_sway.slice(3,6).includes('011')">
+                                <svg class="h-9 w-auto text-gray-800"viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><g fill="none"><path d="M0 0h240v240H0z"/><g stroke="gray" stroke-width="3"><path d="M58.735 98.138h69.7s30.429 2.859 30.429-24.443c0-17.696-19.068-29.504-33.96-16.18-5.141 4.6-7.765 12.526-4.137 18.75M58.735 141.864h92.588s30.43-2.859 30.43 24.448c0 17.688-19.067 29.497-33.964 16.172-5.141-4.6-7.762-12.526-4.137-18.75" stroke-width="7.22082"/><path d="M20 120.448h169.571S220 123.309 220 96c0-17.688-19.066-29.497-33.96-16.172-5.143 4.6-7.764 12.526-4.14 18.75" stroke-width="7.22082"/></g></g></svg>
+                            </template>
+                            <template x-if="code_sway.slice(3,6).includes('100')">
+                                <svg class="h-9 w-auto text-gray-800"viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><g fill="none"><path d="M0 0h240v240H0z"/><path d="M142.122 17.813L62.049 135.684l49.489-.594-25.042 85.838 85.178-116.767-51.674-.058 22.122-86.29z" stroke="#737373" stroke-width="8.33"/></g></svg>
+                            </template>
+                            <template x-if="code_sway.slice(3,6).includes('101')">
+                                <svg class="h-9 w-auto text-gray-800"viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><path fill="none" d="M0 0h240v240H0z"/><path d="M206.8 520.4c-1.9 0-3.8-.7-5.3-2-.4-.3-.7-.6-1-.8-.8-.7-1.8-1.4-2.7-2.5-25.8-29.8-42.3-62.1-49.1-96.1-8.1-40.6-.8-78.5 21.7-112.6 16.2-24.6 36.6-44.4 52.6-58.9 30.5-27.6 53-56 69-86.7 14.2-27.3 21-52.9 20.8-78.1 0-2.7-.2-5.4-.5-8.3l-.3-4.2c-.2-3 1.3-5.8 3.9-7.4l1.3-.8c1.8-1.1 4.1-1.4 6.1-.9 2.1.5 3.9 1.9 4.9 3.8 2.8 5 5.8 10.1 8.6 15 6.4 11.1 13.1 22.5 19.2 34.2 1.7 3.3 3.5 6.6 5.2 9.9 11.3 21.2 23 43.1 26.4 68.8 5.7 43-12.2 81.1-28.3 105.6-16.1 24.6-37 44.9-57.3 64.6l-3.4 3.3c-18.4 17.9-37.5 36.5-53.1 57.2-20.2 27-30.3 55.2-30.8 86.1 0 .6 0 1.2-.1 2l-.1 1.3c-.2 3.1-2.1 5.7-4.9 6.9-.7.4-1.8.6-2.8.6z" fill="none" stroke="gray" stroke-width="18.15" transform="matrix(.3655 0 0 .3217 4.148 2.86)"/><path d="M206.8 520.4c-1.9 0-3.8-.7-5.3-2-.4-.3-.7-.6-1-.8-.8-.7-1.8-1.4-2.7-2.5-25.8-29.8-42.3-62.1-49.1-96.1-8.1-40.6-.8-78.5 21.7-112.6 16.2-24.6 36.6-44.4 52.6-58.9 30.5-27.6 53-56 69-86.7 14.2-27.3 21-52.9 20.8-78.1 0-2.7-.2-5.4-.5-8.3l-.3-4.2c-.2-3 1.3-5.8 3.9-7.4l1.3-.8c1.8-1.1 4.1-1.4 6.1-.9 2.1.5 3.9 1.9 4.9 3.8 2.8 5 5.8 10.1 8.6 15 6.4 11.1 13.1 22.5 19.2 34.2 1.7 3.3 3.5 6.6 5.2 9.9 11.3 21.2 23 43.1 26.4 68.8 5.7 43-12.2 81.1-28.3 105.6-16.1 24.6-37 44.9-57.3 64.6l-3.4 3.3c-18.4 17.9-37.5 36.5-53.1 57.2-20.2 27-30.3 55.2-30.8 86.1 0 .6 0 1.2-.1 2l-.1 1.3c-.2 3.1-2.1 5.7-4.9 6.9-.7.4-1.8.6-2.8.6z" fill="none" stroke="gray" stroke-width="18.15" transform="matrix(.3655 0 0 .3217 40.606 46.366)"/></svg>
+                            </template>
+                            <template x-if="code_sway.slice(3,6).includes('110')">
+                                <svg class="h-9 w-auto text-gray-800"viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><g fill="none"><path d="M0 0h240v240H0z"/><g stroke="gray" stroke-width="8.33"><ellipse cx="120" cy="83.462" rx="95.669" ry="27.071"/><path d="M24.331 84.161c0 52.836 42.832 95.669 95.669 95.669 52.837 0 95.669-42.833 95.669-95.669"/></g></g></svg>
+                            </template>
+                            <template x-if="code_sway.slice(3,6).includes('111')">
+                                <svg class="h-9 w-auto text-gray-800"viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><path fill="none" d="M0 0h240v240H0z"/><ellipse cx="267.573" cy="232.992" rx="151.597" ry="121.339" fill="none" stroke="gray" stroke-width="11.16" transform="matrix(.65965 0 0 .82414 -56.504 -72.017)"/></svg>
+                            </template>
+                        </div>
+                        <div>
+                            <template x-if="code_sway.slice(0,3).includes('000')">
+                                <svg class="h-9 w-auto text-gray-800" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><path fill="none" d="M0 0h240v240H0z"/><path fill="none" stroke="gray" stroke-width="8.3312328" d="M20 20h200v200H20z"/></svg>
+                            </template>
+                            <template x-if="code_sway.slice(0,3).includes('001')">
+                                <svg class="h-9 w-auto text-gray-800" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><g fill="none"><path d="M0 0h240v240H0z"/><path d="M120 22.441l95.669 191.339H24.331L120 22.441z" stroke="#737373" stroke-width="8.33"/></g></svg>
+                            </template>
+                            <template x-if="code_sway.slice(0,3).includes('010')">
+                                <svg class="h-9 w-auto text-gray-800" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><path fill="none" d="M0 0h240v240H0z"/><path d="M214.442 60.745c-1.203.197-2.305.914-3.076 1.984-1.572 2.185-39.079 53.113-90.1 16.572-58.148-41.65-99.507.067-99.92.496-1.825 1.892-1.797 4.921.1 6.747 1.892 1.826 4.918 1.797 6.747-.098 1.444-1.502 36.068-36.323 87.619.597 15.165 10.862 29.34 14.882 42.072 14.882 36.516-.003 60.896-33.185 61.223-33.639a4.762 4.762 0 00-1.092-6.646c-1.064-.765-2.37-1.089-3.573-.895zM214.442 140.673c-1.203.197-2.305.914-3.076 1.985-1.572 2.184-39.079 53.113-90.1 16.571-58.148-41.65-99.507.067-99.92.496-1.825 1.892-1.797 4.921.1 6.747 1.892 1.826 4.918 1.797 6.747-.098 1.444-1.502 36.068-36.322 87.619.597 15.165 10.862 29.34 14.882 42.072 14.882 36.516-.003 60.896-33.185 61.223-33.639a4.762 4.762 0 00-1.092-6.646c-1.064-.765-2.37-1.089-3.573-.895z" fill="gray"/><path d="M214.442 99.437c-1.203.197-2.305.915-3.076 1.985-1.572 2.185-39.079 53.113-90.1 16.572-58.148-41.65-99.507.067-99.92.495-1.825 1.893-1.797 4.922.1 6.748 1.892 1.826 4.918 1.797 6.747-.099 1.444-1.502 36.068-36.322 87.619.597 15.165 10.863 29.34 14.883 42.072 14.883 36.516-.003 60.896-33.185 61.223-33.64a4.762 4.762 0 00-1.092-6.645c-1.064-.765-2.37-1.09-3.573-.896z" fill="gray"/></svg>
+                            </template>
+                            <template x-if="code_sway.slice(0,3).includes('011')">
+                                <svg class="h-9 w-auto text-gray-800"viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><g fill="none"><path d="M0 0h240v240H0z"/><g stroke="gray" stroke-width="3"><path d="M58.735 98.138h69.7s30.429 2.859 30.429-24.443c0-17.696-19.068-29.504-33.96-16.18-5.141 4.6-7.765 12.526-4.137 18.75M58.735 141.864h92.588s30.43-2.859 30.43 24.448c0 17.688-19.067 29.497-33.964 16.172-5.141-4.6-7.762-12.526-4.137-18.75" stroke-width="7.22082"/><path d="M20 120.448h169.571S220 123.309 220 96c0-17.688-19.066-29.497-33.96-16.172-5.143 4.6-7.764 12.526-4.14 18.75" stroke-width="7.22082"/></g></g></svg>
+                            </template>
+                            <template x-if="code_sway.slice(0,3).includes('100')">
+                                <svg class="h-9 w-auto text-gray-800"viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><g fill="none"><path d="M0 0h240v240H0z"/><path d="M142.122 17.813L62.049 135.684l49.489-.594-25.042 85.838 85.178-116.767-51.674-.058 22.122-86.29z" stroke="#737373" stroke-width="8.33"/></g></svg>
+                            </template>
+                            <template x-if="code_sway.slice(0,3).includes('101')">
+                                <svg class="h-9 w-auto text-gray-800"viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><path fill="none" d="M0 0h240v240H0z"/><path d="M206.8 520.4c-1.9 0-3.8-.7-5.3-2-.4-.3-.7-.6-1-.8-.8-.7-1.8-1.4-2.7-2.5-25.8-29.8-42.3-62.1-49.1-96.1-8.1-40.6-.8-78.5 21.7-112.6 16.2-24.6 36.6-44.4 52.6-58.9 30.5-27.6 53-56 69-86.7 14.2-27.3 21-52.9 20.8-78.1 0-2.7-.2-5.4-.5-8.3l-.3-4.2c-.2-3 1.3-5.8 3.9-7.4l1.3-.8c1.8-1.1 4.1-1.4 6.1-.9 2.1.5 3.9 1.9 4.9 3.8 2.8 5 5.8 10.1 8.6 15 6.4 11.1 13.1 22.5 19.2 34.2 1.7 3.3 3.5 6.6 5.2 9.9 11.3 21.2 23 43.1 26.4 68.8 5.7 43-12.2 81.1-28.3 105.6-16.1 24.6-37 44.9-57.3 64.6l-3.4 3.3c-18.4 17.9-37.5 36.5-53.1 57.2-20.2 27-30.3 55.2-30.8 86.1 0 .6 0 1.2-.1 2l-.1 1.3c-.2 3.1-2.1 5.7-4.9 6.9-.7.4-1.8.6-2.8.6z" fill="none" stroke="gray" stroke-width="18.15" transform="matrix(.3655 0 0 .3217 4.148 2.86)"/><path d="M206.8 520.4c-1.9 0-3.8-.7-5.3-2-.4-.3-.7-.6-1-.8-.8-.7-1.8-1.4-2.7-2.5-25.8-29.8-42.3-62.1-49.1-96.1-8.1-40.6-.8-78.5 21.7-112.6 16.2-24.6 36.6-44.4 52.6-58.9 30.5-27.6 53-56 69-86.7 14.2-27.3 21-52.9 20.8-78.1 0-2.7-.2-5.4-.5-8.3l-.3-4.2c-.2-3 1.3-5.8 3.9-7.4l1.3-.8c1.8-1.1 4.1-1.4 6.1-.9 2.1.5 3.9 1.9 4.9 3.8 2.8 5 5.8 10.1 8.6 15 6.4 11.1 13.1 22.5 19.2 34.2 1.7 3.3 3.5 6.6 5.2 9.9 11.3 21.2 23 43.1 26.4 68.8 5.7 43-12.2 81.1-28.3 105.6-16.1 24.6-37 44.9-57.3 64.6l-3.4 3.3c-18.4 17.9-37.5 36.5-53.1 57.2-20.2 27-30.3 55.2-30.8 86.1 0 .6 0 1.2-.1 2l-.1 1.3c-.2 3.1-2.1 5.7-4.9 6.9-.7.4-1.8.6-2.8.6z" fill="none" stroke="gray" stroke-width="18.15" transform="matrix(.3655 0 0 .3217 40.606 46.366)"/></svg>
+                            </template>
+                            <template x-if="code_sway.slice(0,3).includes('110')">
+                                <svg class="h-9 w-auto text-gray-800"viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><g fill="none"><path d="M0 0h240v240H0z"/><g stroke="gray" stroke-width="8.33"><ellipse cx="120" cy="83.462" rx="95.669" ry="27.071"/><path d="M24.331 84.161c0 52.836 42.832 95.669 95.669 95.669 52.837 0 95.669-42.833 95.669-95.669"/></g></g></svg>
+                            </template>
+                            <template x-if="code_sway.slice(0,3).includes('111')">
+                                <svg class="h-9 w-auto text-gray-800"viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"><path fill="none" d="M0 0h240v240H0z"/><ellipse cx="267.573" cy="232.992" rx="151.597" ry="121.339" fill="none" stroke="gray" stroke-width="11.16" transform="matrix(.65965 0 0 .82414 -56.504 -72.017)"/></svg>
+                            </template>
+                        </div>
+                    </div>
+
+                    <span x-show="muta" x-text="sway" class="text-xs text-stone-400"></span>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </body>
+</body>
 </html>
